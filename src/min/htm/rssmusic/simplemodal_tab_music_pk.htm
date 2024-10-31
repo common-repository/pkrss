@@ -1,0 +1,223 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title> 语音新闻王 - 本地超级HTML5播放机 </title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  
+	<link type='text/css' href='./../../css/third/jquery-jplayer/blue.monday/jplayer.blue.monday.css' rel='stylesheet' media='screen' />
+</head>
+<body>
+ <div>
+	<div id="jquery_jplayer_1" class="jp-jplayer"></div>
+	
+	<div id="jp_container_1" class="jp-audio">
+		<div class="jp-type-playlist">
+			<div class="jp-gui jp-interface">
+				<ul class="jp-controls">
+					<li><a href="javascript:;" class="jp-previous" tabindex="1">previous</a></li>
+					<li><a href="javascript:;" class="jp-play" tabindex="1">play</a></li>
+					<li><a href="javascript:;" class="jp-pause" tabindex="1">pause</a></li>
+					<li><a href="javascript:;" class="jp-next" tabindex="1">next</a></li>
+					<li><a href="javascript:;" class="jp-stop" tabindex="1">stop</a></li>
+					<li><a href="javascript:;" class="jp-mute" tabindex="1" title="mute">mute</a></li>
+					<li><a href="javascript:;" class="jp-unmute" tabindex="1" title="unmute">unmute</a></li>
+					<li><a href="javascript:;" class="jp-volume-max" tabindex="1" title="max volume">max volume</a></li>
+				</ul>
+				<div class="jp-progress">
+					<div class="jp-seek-bar">
+						<div class="jp-play-bar"></div>
+					</div>
+				</div>
+				<div class="jp-volume-bar">
+					<div class="jp-volume-bar-value"></div>
+				</div>
+				<div class="jp-time-holder">
+					<div class="jp-current-time"></div>
+					<div class="jp-duration"></div>
+				</div>
+				<ul class="jp-toggles">
+					<li><a href="javascript:;" class="jp-shuffle" tabindex="1" title="shuffle">shuffle</a></li>
+					<li><a href="javascript:;" class="jp-shuffle-off" tabindex="1" title="shuffle off">shuffle off</a></li>
+					<li><a href="javascript:;" class="jp-repeat" tabindex="1" title="repeat">repeat</a></li>
+					<li><a href="javascript:;" class="jp-repeat-off" tabindex="1" title="repeat off">repeat off</a></li>
+				</ul>
+			</div>
+			<div class="jp-playlist">
+				<ul>
+					<li></li>
+				</ul>
+			</div>
+			<div class="jp-no-solution">
+				<span>Update Required</span>
+				To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.
+			</div>
+		</div>
+	</div>
+					 			
+	<div id="jplayer_inspector_1">
+	</div>
+	
+	<input type="file" webkitdirectory="" directory="" multiple="" mozdirectory="" onchange="pkJplayer_localmode.pkJPlayer_operSongs(this)" />
+	
+</div>
+
+<script type="text/javascript" src="./../../js/third/jquery/jquery.min.js"></script>
+<script type='text/javascript' src='./../../js/third/jquery-jplayer/jquery.jplayer.js'></script>
+<script type='text/javascript' src='./../../js/third/jquery-jplayer/add-on/jplayer.playlist.js'></script>
+<script type='text/javascript' src='./../../js/third/jquery-jplayer/add-on/jquery.jplayer.inspector.js'></script>
+<script type='text/javascript' src='./../../js/music/musicaction.js'></script>
+	
+<script type='text/javascript'>
+	
+var pkJplayer_localmode = {
+	
+	
+	'myPlayerPlaylist':null,
+	'pkJPlayer_operSongs': function (obj){
+		if(!obj || !obj.files || !obj.files.length)
+  	  	return;	  
+  	  	
+		//pksetting.savedata('loadlastdata',obj.files);
+		this.pkJPlayer_getSongs(obj.files);
+	},
+	
+	'pkJPlayer_getSongs': function (files){
+		if(!files || !files.length)
+  	  	return;	 
+    var queue = [];
+    for(var i = 0; i < files.length; i++){
+      var file = files[i];
+  			
+	  		var path = file.webkitRelativePath || file.mozFullPath || file.fileName;
+          if(path.indexOf('.AppleDouble') != -1) {
+					// Meta-data folder on Apple file systems, skip
+					continue;
+        }
+			  var size = file.size || file.fileSize || 4096;
+			  if(size < 4095) { 
+					// Most probably not a real MP3
+					console.log(path);
+					continue;
+		  	}
+		  	
+		  	var url,title,findPos,playItem,name = file.name || file.fileName || '';
+      if(window.createObjectURL){
+        url = window.createObjectURL(file)
+      }else if(window.createBlobURL){
+        url = window.createBlobURL(file)
+      }else if(window.URL && window.URL.createObjectURL){
+        url = window.URL.createObjectURL(file)
+      }else if(window.webkitURL && window.webkitURL.createObjectURL){
+        url = window.webkitURL.createObjectURL(file)
+      }
+      
+      findPos = name.lastIndexOf('/');
+      if( findPos == -1)
+      	findPos = name.lastIndexOf('\\');
+      if( findPos != -1)
+      	title = name.substring(findPos);
+      else
+      	title = name;
+ 
+ 				playItem = null;
+        if(title.indexOf('.mp3') != -1){ //only does mp3 for now           
+        playItem = {
+			        mp3:url,
+			        title:title
+			    };
+        }
+        else if(title.indexOf('.ogg') != -1  || title.indexOf('.oga') != -1){	          	          	
+      	playItem = {
+			        oga:url,
+			        title:title
+			    };
+        }
+        
+        if(playItem){
+        	this.myPlayerPlaylist.add(playItem);
+        //pksetting.user.bgMusicList.push(playItem);
+			  }
+      }
+      
+	//pksetting.saveUserData();
+},
+
+'pkJPlayer_init':function (){
+	var myPlaylist = [
+	{ // http://funfunfunmedia.com/author/publicdomain2ten
+	    mp3:'http://archive.org/download/FrenchysStringBand-SunshineSpecial/FrenchysStringBand-SunshineSpecial.mp3',
+	    title:'Sunshine Special',
+	    artist:'Frenchy’s String Band,PUBLICDOMAIN2TEN',
+	    rating:4,
+	    buy:'',
+	    price:'0.00',
+	    duration:'4:04',
+	    cover:'/images/pkrss_64_64.png',        
+			free:true,
+				// m4v: "http://www.jplayer.org/video/m4v/Big_Buck_Bunny_Trailer.m4v",
+				// ogv: "http://www.jplayer.org/video/ogv/Big_Buck_Bunny_Trailer.ogv",
+				// webmv: "http://www.jplayer.org/video/webm/Big_Buck_Bunny_Trailer.webm",
+			poster:"http://funfunfunmedia.com/files/2012/03/sunshine-special.jpg"
+	},
+	{
+	    ogg:'http://localhost/mp3/6385_local_1231362714.wav',
+	    title:'6385_local_1231362714',
+	    artist:'Johnny Dodds,PUBLICDOMAIN2TEN',
+			poster:"http://funfunfunmedia.com/files/2012/03/Johnny-Dodds.jpg"
+	},
+	{
+	    mp3:'http://www.archive.org/download/JohnnyDodds-bluePianoStomp/Johnny_dodds-bluePianoStomp.mp3',
+	    title:'Blue Piano Stomp',
+	    artist:'Johnny Dodds,PUBLICDOMAIN2TEN',
+			poster:"http://funfunfunmedia.com/files/2012/03/Johnny-Dodds.jpg"
+	},
+	{
+	    mp3:'http://www.archive.org/download/JaybirdColeman-MistreatinMama/JaybirdColeman-MistreatinMama.mp3',
+	    title:'Mistreatin’ Mama',
+	    artist:'Jaybird Coleman,PUBLICDOMAIN2TEN',
+			poster:"http://funfunfunmedia.com/files/2012/03/jaybird_coleman100.jpg"
+	},
+	{
+	    mp3:'http://www.archive.org/download/WilliamMooreoneWayGal/WilliamMoore-OneWayGal.mp3',
+	    title:'One Way Gal',
+	    artist:'William Moore,PUBLICDOMAIN2TEN',
+			poster:"http://funfunfunmedia.com/files/2012/03/william-moore.jpg"
+	},
+	{
+	    mp3:'http://www.archive.org/download/PinkAndersonSimmieDooleyeveryDayInTheWeekBlues/PinkAndersonSimmieDooley-EveryDayInTheWeekBlues.mp3',
+	    title:'Every Day In The Week Blues',
+	    artist:'Pink Anderson & Simmie Dooley,PUBLICDOMAIN2TEN',
+			poster:"http://funfunfunmedia.com/files/2012/02/Screen-shot-2012-02-27-at-11.38.26-AM.png"
+	}
+	];
+	
+	this.myPlayerPlaylist = new jPlayerPlaylist({
+							jPlayer: "#jquery_jplayer_1",
+							cssSelectorAncestor: "#jp_container_1"
+						}, myPlaylist, {
+							playlistOptions: {
+								autoPlay:true,
+								enableRemoveControls: true
+							},
+							swfPath: './../../js/third/jquery-jplayer',
+							supplied: "oga, mp3", // show video:, ogv, m4v
+							volume: 0.8,
+							wmode: "window"
+						});			
+	//$("#jplayer_inspector_1").jPlayerInspector({jPlayer:$("#jquery_jplayer_1")});
+	
+	//this.loadlastdata();
+},
+
+'loadlastdata':function(){
+	var data = pksetting.loaddata('loadlastdata');
+	if(!data)
+		return;
+	this.pkJPlayer_getSongs(data);
+}
+
+};
+
+pkJplayer_localmode.pkJPlayer_init();
+
+</script>

@@ -1,0 +1,1 @@
+(function(){function a(){return{}}var b=new pkrss.utils.tts.base();pkrss.extend(b,new a());pkrss.utils.tts.factory.regist(b,true);pkrss.define("pkrss.utils.tts",{wp8:b})})();
